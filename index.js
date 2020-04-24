@@ -15,6 +15,8 @@ app.use(function (req, res, next) {
   next()
 })
 
+app.use(express.json())
+
 app.get('/recipes', (req, res, next) => {
   const recipes = [
     {
@@ -61,7 +63,7 @@ app.get('/recipes', (req, res, next) => {
           'equipment': [
             'food processor'
           ],
-          'description': 'Break up the graham crackers; place in a food processor and process to crumbs. If you don\'t have a food processor, place the crackers in a large plastic bag; seal and then crush the crackers with a rolling pin. Add the melted butter and sugar and pulse or stir until combined.'
+          'description': 'Break up the graham crackers; place in a food processor and process to crumbs. If you don"t have a food processor, place the crackers in a large plastic bag; seal and then crush the crackers with a rolling pin. Add the melted butter and sugar and pulse or stir until combined.'
         },
         {
           'ingredients': [
@@ -192,14 +194,14 @@ app.get('/recipes', (req, res, next) => {
               }
             },
             {
-              'name': 'confectioners\' sugar',
+              'name': 'confectioners" sugar',
               'amount': {
                 'value': 2,
                 'units': 'tablespoons'
               }
             }
           ],
-          'description': 'Whip the cream and the confectioners\' sugar until nearly stiff.'
+          'description': 'Whip the cream and the confectioners" sugar until nearly stiff.'
         }
       ],
       'serving': 'Freeze for 15 to 20 minutes before serving. Cut the pie into wedges and serve very cold, topping each wedge with a large dollop of whipped cream.',
@@ -418,26 +420,110 @@ app.get('/recipes', (req, res, next) => {
       return true
     }
   }))
+})
 
-  app.post('/recipes', (req, res, next) => {
-    const recipeKey = datastore.key('Recipe')
-    const entity = {
-      key: recipeKey,
-      data: [
-        {
-          name: 'title',
-          value: req.body.title
-        }, {
-          name: 'source',
-          value: req.body.source
-        }, {
-          name: 'titleImage',
-          value: req.body.titleImage
-        }, {
-          name: 'yields',
-          value: req.body.yields
-        }
-      ]
+app.post('/recipes', (req, res, next) => {
+
+  const recipe = req.body
+
+  saveEntity(['Recipe', recipe.id], [
+    {
+      name: 'title',
+      value: recipe.title
+    }, {
+      name: 'source',
+      value: recipe.source
+    }, {
+      name: 'titleImage',
+      value: recipe.titleImage
+    }, {
+      name: 'yields',
+      value: recipe.yields
+    }, {
+      name: 'created',
+      value: new Date()
     }
+  ]).then(e => {
+    res.status(200)
+    return e
+  }).catch(error => {
+    console.error(error)
+    res.status(500)
+    return error
   })
 })
+
+async function addRecipe (recipe) {
+  let recipeKey = saveEntity(['Recipe', recipe.id], [
+    {
+      name: 'title',
+      value: recipe.title
+    }, {
+      name: 'source',
+      value: recipe.source
+    }, {
+      name: 'titleImage',
+      value: recipe.titleImage
+    }, {
+      name: 'yields',
+      value: recipe.yields
+    }, {
+      name: 'created',
+      value: new Date()
+    }
+  ])
+  recipe.steps && recipe.steps.forEach(step => {
+    let stepKey = saveEntity(['Recipe', recipe.id, 'Step'], [
+      {
+        name: 'description',
+        value: step.description
+      }
+    ])
+    step.ingredients && step.ingredients.forEach(ingredient => {
+      saveEntity(['Recipe', recipeKey, 'Step', stepKey], [
+        {
+          name: 'name',
+          value: ingredient.name
+        }, {
+          name: 'amount',
+          value: ingredient.amount
+        }
+      ])
+    })
+
+  })
+}
+
+async function saveEntity (keyArray, formattedData) {
+  const key = datastore.key(keyArray)
+  const entity = {
+    key: key,
+    data: formattedData
+  }
+  try {
+    await datastore.save(entity)
+    console.log(`${key.id} created successfully.`)
+  } catch (err) {
+    console.error('ERROR:', err)
+  }
+  return key
+}
+
+async function addIngredient (step, recipeId, stepKey) {
+  const key = datastore.key(['Recipe', recipeId, 'Step', stepKey])
+  const entity = {
+    key: key,
+    data: [
+      {
+        name: 'description',
+        value: step.description
+      }
+    ]
+  }
+  try {
+    await datastore.save(entity)
+    console.log(`Step ${stepKey.id} created successfully.`)
+  } catch (err) {
+    console.error('ERROR:', err)
+  }
+}
