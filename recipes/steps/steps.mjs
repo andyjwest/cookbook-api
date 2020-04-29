@@ -1,6 +1,6 @@
 import {formatData, saveEntity} from "../../datastore.mjs";
-import {datastore} from "../../datastore";
-import {buildRecipeKey} from "../recipeStore";
+import {datastore} from "../../datastore.mjs";
+import {buildRecipeKey} from "../recipeStore.mjs";
 
 export async function getRecipeSteps(recipeId){
     if(recipeId){
