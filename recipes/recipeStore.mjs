@@ -2,7 +2,8 @@ import {datastore} from "../datastore.mjs";
 
 export async function getAllRecipes(){
     const query = datastore.createQuery('Recipe')
-    return await datastore.runQuery(query)
+    const queryResults = await datastore.runQuery(query)
+    return queryResults[0]
 }
 
 export async function removeRecipe(recipeId){
