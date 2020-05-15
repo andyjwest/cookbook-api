@@ -5,9 +5,8 @@ import {buildRecipeKey} from "../recipeStore.mjs";
 export async function getRecipeSteps(recipeId){
     if(recipeId){
         const query = datastore.createQuery('Step').hasAncestor(buildRecipeKey(recipeId))
-        return await datastore.runQuery(query).then(results => {
-            results[0]
-        })
+        //TODO Handle errors
+        return await datastore.runQuery(query).then(results => results[0])
     }else{
         return Promise.reject("recipeId is required")
     }

@@ -1,13 +1,14 @@
 import express from 'express'
 import {createRecipe, getRecipes} from "./recipesService.mjs";
 import {getSteps} from "./recipe.mjs";
-import {deleteRecipe, updateRecipe} from "./recipe.mjs";
+import {deleteRecipe, updateRecipe, getRecipe} from "./recipe.mjs";
 import {createStep, deleteStep} from "./steps/steps.mjs";
 
 let router = express.Router()
 
 router.get('/', getRecipes)
 router.post('/', createRecipe)
+router.get('/:recipeId', getRecipe)
 router.patch('/:recipeId', updateRecipe)
 router.delete('/:recipeId', deleteRecipe)
 router.get('/:recipeId/steps', getSteps)

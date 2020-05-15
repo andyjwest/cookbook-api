@@ -1,9 +1,24 @@
 import {createRecipe} from "./recipesService.mjs";
 import {removeRecipe} from "./recipeStore.mjs";
 import {getRecipeSteps} from "./steps/steps.mjs";
+import {getRecipeById} from "./recipeStore";
 
 export function updateRecipe(req, res, next) {
     createRecipe(req, res, next)
+}
+
+export function getRecipe(req, res, next) {
+    if (req.params.recipeId) {
+        getRecipeById(req.params.recipeId)
+            .then(it => res.json(it[0]))
+            .catch(e => {
+                console.error(e)
+                res.send(e)
+            })
+    } else {
+        res.statusCode(401)
+        res.send('Invalid recipeId')
+    }
 }
 
 export async function deleteRecipe(req, res, next) {
