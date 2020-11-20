@@ -5,9 +5,10 @@
   "license": "MIT",
   "dependencies": {
     "@google-cloud/datastore": "^6.3.0",
+    "esm": "^3.2.25",
     "express": "^4.17.1"
   },
   "scripts": {
-    "start": "node --experimental-modules index.mjs"
+    "start": "node -r esm index.mjs"
   }
 }
