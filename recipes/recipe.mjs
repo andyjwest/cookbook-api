@@ -1,7 +1,7 @@
 import {createRecipe} from "./recipesService.mjs";
 import {removeRecipe} from "./recipeStore.mjs";
 import {getRecipeSteps} from "./steps/steps.mjs";
-import {getRecipeById} from "./recipeStore";
+import {getRecipeById} from "./recipeStore.mjs";
 
 export function updateRecipe(req, res, next) {
     createRecipe(req, res, next)
