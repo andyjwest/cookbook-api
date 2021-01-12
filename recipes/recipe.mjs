@@ -7,7 +7,7 @@ export function updateRecipe(req, res, next) {
     createRecipe(req, res, next)
 }
 
-export function getRecipe(req, res, next) {
+export function getRecipe(req, res) {
     if (req.params.recipeId) {
         getRecipeById(req.params.recipeId)
             .then(it => res.json(it[0]))
