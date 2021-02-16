@@ -19,7 +19,7 @@ export function createRecipe(req, res, next) {
     //TODO validate the recipe
 
     const recipePromise = saveEntity(['Recipe', recipe.id], formatRecipeData(recipe));
-    const stepsPromises = recipe.steps ? recipe.steps.map((step, index) => {
+    const stepsPromises = recipe && recipe.steps ? recipe.steps.map((step, index) => {
         return saveEntity(['Recipe', recipe.id, 'Step', index + 1], formatStepData(step))
     }) : Promise.resolve()
 
